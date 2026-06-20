@@ -30,7 +30,7 @@ const HeroText = () => {
             transition={{ delay: 1.5 }}
           >
             <FlipWords
-              words={["Attractive", "Mordern", "Scalable"]}
+              words={["Attractive", "Modern", "Scalable"]}
               className="font-black text-white text-8xl"
             />
           </motion.div>
@@ -42,6 +42,27 @@ const HeroText = () => {
           >
             Web Solutions
           </motion.p>
+          <motion.div
+            className="flex gap-4 mt-8 justify-start"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 2.0 }}
+          >
+            <a
+              href="#contact"
+              className="px-6 py-3 text-sm font-medium text-center text-white rounded-full bg-radial from-lavender to-royal hover-animation"
+            >
+              Let's Talk
+            </a>
+            <a
+              href="/assets/Shivansh_June_CV.pdf"
+              target="_blank"
+              rel="noreferrer"
+              className="px-6 py-3 text-sm font-medium text-center text-white border border-white/20 rounded-full bg-primary/40 hover-animation"
+            >
+              Download CV
+            </a>
+          </motion.div>
         </div>
       </div>
       <div className="flex- flex-col space-y-6 md:hidden ">
@@ -68,7 +89,7 @@ const HeroText = () => {
             transition={{ delay: 1.5 }}
           >
             <FlipWords
-              words={["Attractive", "mordern", "Scalable"]}
+              words={["Attractive", "Modern", "Scalable"]}
               className="font-bold text-white text-7xl"
             />
           </motion.div>
@@ -80,6 +101,27 @@ const HeroText = () => {
           >
             Web Solutions
           </motion.p>
+          <motion.div
+            className="flex gap-4 mt-8 justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 2.0 }}
+          >
+            <a
+              href="#contact"
+              className="px-6 py-3 text-sm font-medium text-center text-white rounded-full bg-radial from-lavender to-royal hover-animation"
+            >
+              Let's Talk
+            </a>
+            <a
+              href="/assets/Shivansh_June_CV.pdf"
+              target="_blank"
+              rel="noreferrer"
+              className="px-6 py-3 text-sm font-medium text-center text-white border border-white/20 rounded-full bg-primary/40 hover-animation"
+            >
+              Download CV
+            </a>
+          </motion.div>
         </div>
       </div>
     </div>
