@@ -5,12 +5,47 @@ const CopyEmailButton = () => {
   const email = "shivanshsharma3000@gmail.com";
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(email);
-    setCopied(true);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(email)
+        .then(() => {
+          setCopied(true);
+          setTimeout(() => {
+            setCopied(false);
+          }, 2000);
+        })
+        .catch((err) => {
+          console.error("Clipboard API failed, using fallback:", err);
+          fallbackCopy(email);
+        });
+    } else {
+      fallbackCopy(email);
+    }
+  };
 
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
+  const fallbackCopy = (text) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      const successful = document.execCommand("copy");
+      if (successful) {
+        setCopied(true);
+        setTimeout(() => {
+          setCopied(false);
+        }, 2000);
+      } else {
+        console.error("Fallback copy failed");
+      }
+    } catch (err) {
+      console.error("Fallback copy exception:", err);
+    }
+    document.body.removeChild(textArea);
   };
   return (
     <motion.button
