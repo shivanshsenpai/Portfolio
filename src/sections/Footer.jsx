@@ -1,7 +1,23 @@
+import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { mySocials } from "../constants";
+
 const Footer = () => {
+  const [activeModal, setActiveModal] = useState(null); // 'terms' | 'privacy' | null
+
+  const modalContent = {
+    terms: {
+      title: "Terms & Conditions",
+      text: "All components, styles, and assets on this portfolio are built to the highest standard of quality. As a rule of craft, nothing on this website should feel left out or underworked. Every single element is designed, refined, and verified to be complete, functional, and polished."
+    },
+    privacy: {
+      title: "Privacy Policy",
+      text: "Your privacy is respected. No analytics, tracking pixels, or cookies are utilized on this site. Data submitted through the contact form is processed securely via EmailJS, and no personal information is stored or shared."
+    }
+  };
+
   return (
-    <section className="pb-8 text-sm text-neutral-400 c-space mt-20">
+    <section className="relative pb-8 text-sm text-neutral-400 c-space mt-20">
       <div className="mb-8 bg-gradient-to-r from-transparent via-neutral-700 to-transparent h-[1px] w-full" />
       
       {/* Contact & Buttons Row */}
@@ -35,9 +51,19 @@ const Footer = () => {
       {/* Existing Footer Bottom Row */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-white/5">
         <div className="flex gap-2 text-xs">
-          <p>Terms & Conditions</p>
+          <button 
+            onClick={() => setActiveModal("terms")} 
+            className="hover:text-white cursor-pointer transition-colors bg-transparent border-0 p-0 font-inherit"
+          >
+            Terms & Conditions
+          </button>
           <p>|</p>
-          <p>Privacy Policy</p>
+          <button 
+            onClick={() => setActiveModal("privacy")} 
+            className="hover:text-white cursor-pointer transition-colors bg-transparent border-0 p-0 font-inherit"
+          >
+            Privacy Policy
+          </button>
         </div>
         <div className="flex gap-3 justify-center">
           {mySocials.map((social, index) => (
@@ -52,6 +78,34 @@ const Footer = () => {
         </div>
         <p className="text-xs text-neutral-500">© 2026 Shivansh Sharma. All rights reserved.</p>
       </div>
+
+      {/* Interactive Modal */}
+      <AnimatePresence>
+        {activeModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-black/40">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.2 }}
+              className="relative w-full max-w-md p-6 border rounded-2xl shadow-xl bg-midnight border-white/10 text-neutral-300"
+            >
+              <button 
+                onClick={() => setActiveModal(null)} 
+                className="absolute p-1.5 rounded-lg top-4 right-4 hover:bg-white/10 transition-colors cursor-pointer"
+              >
+                <img src="assets/close.svg" className="w-5 h-5" alt="Close" />
+              </button>
+              <h4 className="text-xl font-semibold text-white mb-4">
+                {modalContent[activeModal].title}
+              </h4>
+              <p className="leading-relaxed text-sm text-neutral-400">
+                {modalContent[activeModal].text}
+              </p>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };
