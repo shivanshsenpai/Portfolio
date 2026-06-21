@@ -20,12 +20,12 @@ export const myProjects = [
   },
   {
     id: 2,
-    title: "Crowd Surveillance via Drones",
+    title: "Crowd Surveillance via Drones (Patent Published)",
     description:
-      "An AI-powered real-time drone surveillance platform designed to monitor crowd density and detect safety hazards.",
+      "An AI-powered real-time drone surveillance platform with a published research patent, designed to monitor crowd density and detect safety hazards.",
     subDescription: [
       "Utilizes custom CNN models and OpenCV pipelines for low-latency live video threat detection.",
-      "Successfully identifies critical hazards like weapons and fire in real-world scenarios for rapid response.",
+      "Published research patent covering novel drone-based threat and fire detection methodologies for crowd safety.",
       "Designed with an interactive web dashboard showcasing real-time detection timelines, charts, and metrics.",
     ],
     href: "https://github.com/shivanshsenpai",
@@ -38,7 +38,7 @@ export const myProjects = [
   },
   {
     id: 3,
-    title: "Gym Management System",
+    title: "Fitness One - Gym Management",
     description:
       "A responsive gym management and attendance tracking platform built to automate member check-ins and fees renewal.",
     subDescription: [
@@ -46,9 +46,9 @@ export const myProjects = [
       "Utilized Google Sheets as a live database via N8N automation workflow for real-time data sync.",
       "Designed highly reusable, modular components to maintain consistent styling and scale seamlessly.",
     ],
-    href: "https://github.com/shivanshsenpai",
+    href: "https://github.com/shivanshsenpai/Fitness_One",
     logo: "",
-    image: "/assets/projects/b.jpg.png",
+    image: "/assets/projects/fitness-one-captured.png",
     tags: [
       { id: 1, name: "React.js", path: "/assets/logos/react.svg" },
       { id: 2, name: "JavaScript", path: "/assets/logos/javascript.svg" },
@@ -161,29 +161,5 @@ export const reviews = [
     username: "@surveillance_pro",
     body: "Low-latency frame processing and accurate threat alerts makes this drone platform a robust, practical solution for real-world monitoring.",
     img: "https://robohash.org/dronepro",
-  },
-  {
-    name: "Bob",
-    username: "@bob",
-    body: "Incredible work! The attention to detail is phenomenal.",
-    img: "https://robohash.org/bob",
-  },
-  {
-    name: "Charlie",
-    username: "@charlie",
-    body: "This exceeded all my expectations. Absolutely stunning!",
-    img: "https://robohash.org/charlie",
-  },
-  {
-    name: "Dave",
-    username: "@dave",
-    body: "Simply breathtaking. The best decision I've made in a while.",
-    img: "https://robohash.org/dave",
-  },
-  {
-    name: "Eve",
-    username: "@eve",
-    body: "So glad I found this. It has changed the game for me.",
-    img: "https://robohash.org/eve",
   },
 ];
