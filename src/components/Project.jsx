@@ -15,7 +15,11 @@ const Project = ({
     <>
       <div
         className="flex-wrap items-center justify-between py-10 space-y-14 sm:flex sm:space-y-0"
-        onMouseEnter={() => setPreview(image)}
+        onMouseEnter={() => {
+          if (window.matchMedia("(pointer: fine)").matches) {
+            setPreview(image);
+          }
+        }}
         onMouseLeave={() => setPreview(null)}
       >
         <div>

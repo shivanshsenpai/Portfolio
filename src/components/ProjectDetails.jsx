@@ -9,20 +9,21 @@ const ProjectDetails = ({
   closeModal,
 }) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center w-full h-full overflow-hidden backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center w-full h-full p-4 backdrop-blur-sm bg-black/50">
       <motion.div
-        className="relative max-w-2xl border shadow-sm rounded-2xl bg-gradient-to-l from-midnight to-navy border-white/10"
-        initial={{ opacity: 0, scale: 0.5 }}
+        className="relative max-w-2xl w-full border shadow-2xl rounded-2xl bg-gradient-to-l from-midnight to-navy border-white/10 overflow-hidden max-h-[90vh] flex flex-col"
+        initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
       >
         <button
           onClick={closeModal}
-          className="absolute p-2 rounded-sm top-5 right-5 bg-midnight hover:bg-gray-500"
+          className="absolute z-10 p-2 rounded-full top-3 right-3 bg-midnight/80 backdrop-blur-md border border-white/10 hover:bg-neutral-800 transition-colors"
         >
-          <img src="assets/close.svg" className="w-6 h-6" />
+          <img src="assets/close.svg" className="w-5 h-5" />
         </button>
-        <img src={image} alt={title} className="w-full rounded-t-2xl" />
-        <div className="p-5">
+        <div className="overflow-y-auto flex-1">
+          <img src={image} alt={title} className="w-full h-48 sm:h-64 md:h-auto object-cover rounded-t-2xl" />
+          <div className="p-5">
           <h5 className="mb-2 text-2xl font-bold text-white">{title}</h5>
           <p className="mb-3 font-normal text-neutral-400">{description}</p>
           {subDescription.map((subDesc, index) => (
@@ -50,8 +51,9 @@ const ProjectDetails = ({
             </a>
           </div>
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
+  </div>
   );
 };
 
