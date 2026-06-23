@@ -26,7 +26,7 @@ import Footer from "./sections/Footer";
 
 const App = () => {
   return (
-    <div className="container mx-auto max-w-7xl">
+    <div className="w-full max-w-7xl mx-auto overflow-x-hidden">
       <Navbar />
       <Hero />
       <About />
