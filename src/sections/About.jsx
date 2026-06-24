@@ -30,9 +30,13 @@ const About = () => {
             ref={grid2Container}
             className="flex items-center justify-center w-full h-full"
           >
-            <p className="flex items-end text-5xl text-gray-500">
-              Hello Sekai
-            </p>
+            <div className="flex flex-col items-center justify-center text-center relative z-10 select-none pointer-events-none max-w-[80%]">
+              <p className="text-xs uppercase tracking-widest text-mint font-semibold mb-1">Placement Success</p>
+              <h3 className="text-4xl font-black text-white mb-1.5">8+ Offers</h3>
+              <p className="text-[11px] text-neutral-400 leading-snug">
+                Secured across competitive drives, validating DSA problem-solving and full-stack technical agility.
+              </p>
+            </div>
             <Card
               style={{ rotate: "75deg", top: "30%", left: "20%" }}
               text="GRASP"
