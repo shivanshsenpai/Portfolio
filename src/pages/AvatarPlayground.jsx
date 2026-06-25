@@ -6,61 +6,12 @@ import OrganicDotGrid from "../components/OrganicDotGrid";
 
 const AvatarPlayground = ({ onBack }) => {
   const [modelType, setModelType] = useState("animated"); // "animated" | "standing"
-  const [lightColor, setLightColor] = useState("#ffffff"); // hex color
   const [intensity, setIntensity] = useState(1.5);
   const [autoRotate, setAutoRotate] = useState(false);
 
   const modelPath = modelType === "animated" 
     ? "/models/avatar-animated.glb" 
     : "/models/avatar-standing.glb";
-
-  const presetColors = [
-    { name: "Neon Blue", value: "#33c2cc" },
-    { name: "Royal Purple", value: "#7a57db" },
-    { name: "Cyberpunk Pink", value: "#ea4884" },
-    { name: "Studio White", value: "#ffffff" },
-  ];
-
-  const themes = {
-    "#ffffff": { // Studio White
-      canvasBg: "#ffffff",
-      containerBg: "bg-white",
-      borderClass: "border-neutral-200",
-      ambientIntensity: 0.8,
-      spotlightIntensity: 1.2,
-      textColor: "text-neutral-600 bg-white/80 border-neutral-200",
-      ambientColor: "#ffffff",
-    },
-    "#33c2cc": { // Neon Blue
-      canvasBg: "#05111a",
-      containerBg: "bg-gradient-to-b from-[#020d18] to-[#05111a]",
-      borderClass: "border-aqua/45 shadow-[0_0_20px_rgba(51,194,204,0.15)]",
-      ambientIntensity: 0.25,
-      spotlightIntensity: 2.8,
-      textColor: "text-aqua bg-black/60 border-aqua/30 backdrop-blur-sm",
-      ambientColor: "#0b253a",
-    },
-    "#7a57db": { // Royal Purple
-      canvasBg: "#0b061e",
-      containerBg: "bg-gradient-to-b from-[#070314] to-[#0b061e]",
-      borderClass: "border-lavender/45 shadow-[0_0_20px_rgba(122,87,219,0.15)]",
-      ambientIntensity: 0.25,
-      spotlightIntensity: 2.8,
-      textColor: "text-lavender bg-black/60 border-lavender/30 backdrop-blur-sm",
-      ambientColor: "#170f38",
-    },
-    "#ea4884": { // Cyberpunk Pink
-      canvasBg: "#140410",
-      containerBg: "bg-gradient-to-b from-[#0a0108] to-[#140410]",
-      borderClass: "border-coral/45 shadow-[0_0_20px_rgba(234,72,132,0.15)]",
-      ambientIntensity: 0.25,
-      spotlightIntensity: 2.8,
-      textColor: "text-coral bg-black/60 border-coral/30 backdrop-blur-sm",
-      ambientColor: "#2e0924",
-    }
-  };
-
-  const activeTheme = themes[lightColor] || themes["#ffffff"];
 
   return (
     <div className="relative w-full min-h-screen bg-transparent overflow-hidden flex flex-col justify-between text-white">
@@ -114,29 +65,6 @@ const AvatarPlayground = ({ onBack }) => {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold tracking-wide text-neutral-300 uppercase mb-3">Spotlight Glow</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {presetColors.map((color, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setLightColor(color.value)}
-                  className={`py-1.5 px-2 rounded-md text-[11px] cursor-pointer border transition-all ${
-                    lightColor === color.value 
-                      ? "border-mint text-white" 
-                      : "border-transparent bg-white/5 text-neutral-400 hover:bg-white/10"
-                  }`}
-                >
-                  <span 
-                    className="inline-block w-2.5 h-2.5 rounded-full mr-1.5 align-middle"
-                    style={{ backgroundColor: color.value }}
-                  />
-                  {color.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
             <div className="flex justify-between text-xs text-neutral-300 mb-2">
               <span>Light Intensity</span>
               <span>{intensity}x</span>
@@ -170,17 +98,17 @@ const AvatarPlayground = ({ onBack }) => {
         </section>
 
         {/* 3D Canvas Box */}
-        <section className={`lg:col-span-3 h-[50vh] lg:h-[70vh] relative border rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 ${activeTheme.containerBg} ${activeTheme.borderClass}`}>
-          <Canvas camera={{ position: [0, 0, 3.5], fov: 45 }}>
-            <color attach="background" args={[activeTheme.canvasBg]} />
-            <ambientLight intensity={activeTheme.ambientIntensity} color={activeTheme.ambientColor} />
-            <directionalLight position={[5, 10, 5]} intensity={1.1} color={lightColor} />
+        <section className="lg:col-span-3 h-[50vh] lg:h-[70vh] relative border border-neutral-200 bg-white rounded-3xl overflow-hidden shadow-2xl">
+          <Canvas camera={{ position: [0, 0.4, 5.0], fov: 45 }}>
+            <color attach="background" args={["#ffffff"]} />
+            <ambientLight intensity={0.8} />
+            <directionalLight position={[5, 10, 5]} intensity={1.1} color="#ffffff" />
             <spotLight
               position={[0, 5, 5]}
               angle={0.6}
               penumbra={1}
-              intensity={activeTheme.spotlightIntensity * (intensity / 1.5)}
-              color={lightColor}
+              intensity={1.2 * (intensity / 1.5)}
+              color="#ffffff"
               castShadow
             />
             
@@ -202,7 +130,7 @@ const AvatarPlayground = ({ onBack }) => {
 
           {/* Interactive tips */}
           <div className="absolute bottom-4 left-4 right-4 text-center pointer-events-none select-none">
-            <p className={`text-xs border py-2 px-4 rounded-full inline-block shadow-sm transition-all duration-500 ${activeTheme.textColor}`}>
+            <p className="text-xs text-neutral-600 bg-white/80 backdrop-blur-sm border border-neutral-200 py-2 px-4 rounded-full inline-block shadow-sm">
               🖱️ Drag to rotate | 📜 Scroll to zoom
             </p>
           </div>
