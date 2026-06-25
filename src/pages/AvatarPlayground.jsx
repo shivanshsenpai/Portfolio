@@ -24,14 +24,16 @@ const AvatarPlayground = ({ onBack }) => {
 
   return (
     <div className="relative w-full min-h-screen bg-primary overflow-hidden flex flex-col justify-between text-white">
-      {/* Background Particles Theme */}
-      <Particles
-        className="absolute inset-0 -z-10"
-        quantity={120}
-        ease={80}
-        color={"#ffffff"}
-        refresh
-      />
+      {/* Background Spline Organic Dot Grid */}
+      <div className="absolute inset-0 -z-10 w-full h-full pointer-events-none">
+        <iframe
+          src="https://my.spline.design/organicdotgrid-E9v69qmgDrPkS6Cry4w7UF6k/"
+          frameBorder="0"
+          width="100%"
+          height="100%"
+          style={{ border: "none" }}
+        />
+      </div>
 
       {/* Header Panel */}
       <header className="z-10 w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
@@ -43,7 +45,7 @@ const AvatarPlayground = ({ onBack }) => {
         </div>
         <button
           onClick={onBack}
-          className="px-5 py-2.5 text-xs font-semibold tracking-wider text-white border border-white/10 rounded-full bg-midnight/60 hover-animation hover:bg-neutral-800 cursor-pointer"
+          className="px-5 py-2.5 text-xs font-semibold tracking-wider text-white border border-white/10 rounded-full bg-midnight/60 backdrop-blur-md hover-animation hover:bg-neutral-800 cursor-pointer"
         >
           ← Back to Portfolio
         </button>
@@ -52,7 +54,7 @@ const AvatarPlayground = ({ onBack }) => {
       {/* Main Interactive Playground Area */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-4 gap-6 items-center">
         {/* left settings panel */}
-        <section className="lg:col-span-1 z-10 flex flex-col gap-5 p-6 rounded-2xl bg-midnight/40 border border-white/5 backdrop-blur-md">
+        <section className="lg:col-span-1 z-10 flex flex-col gap-5 p-6 rounded-2xl bg-midnight/50 border border-white/10 backdrop-blur-md">
           <div>
             <h3 className="text-sm font-semibold tracking-wide text-neutral-300 uppercase mb-3">Model Mode</h3>
             <div className="grid grid-cols-2 gap-2">
@@ -136,10 +138,11 @@ const AvatarPlayground = ({ onBack }) => {
         </section>
 
         {/* 3D Canvas Box */}
-        <section className="lg:col-span-3 h-[50vh] lg:h-[70vh] relative border border-white/5 bg-radial from-midnight/20 to-primary rounded-3xl overflow-hidden">
+        <section className="lg:col-span-3 h-[50vh] lg:h-[70vh] relative border border-neutral-200 bg-white rounded-3xl overflow-hidden shadow-2xl">
           <Canvas camera={{ position: [0, 0, 3.5], fov: 45 }}>
-            <ambientLight intensity={0.4} />
-            <directionalLight position={[5, 10, 5]} intensity={1} />
+            <color attach="background" args={["#ffffff"]} />
+            <ambientLight intensity={0.7} />
+            <directionalLight position={[5, 10, 5]} intensity={1.2} />
             <spotLight
               position={[0, 5, 5]}
               angle={0.6}
@@ -167,7 +170,7 @@ const AvatarPlayground = ({ onBack }) => {
 
           {/* Interactive tips */}
           <div className="absolute bottom-4 left-4 right-4 text-center pointer-events-none select-none">
-            <p className="text-xs text-neutral-400 bg-midnight/40 backdrop-blur-sm border border-white/5 py-2 px-4 rounded-full inline-block">
+            <p className="text-xs text-neutral-600 bg-white/80 backdrop-blur-sm border border-neutral-200 py-2 px-4 rounded-full inline-block shadow-sm">
               🖱️ Drag to rotate | 📜 Scroll to zoom
             </p>
           </div>
