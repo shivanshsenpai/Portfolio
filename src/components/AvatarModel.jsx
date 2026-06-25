@@ -3,7 +3,14 @@ import { useGLTF, useAnimations } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-const AvatarModel = ({ modelPath, playAnimation = true, scale = 1.6, position = [0, -1.2, 0] }) => {
+const AvatarModel = ({ 
+  modelPath, 
+  playAnimation = true, 
+  scale = 1.6, 
+  position = [0, -1.2, 0],
+  jumpTrigger = 0,
+  spinTrigger = 0
+}) => {
   const group = useRef();
   const { scene, animations } = useGLTF(modelPath);
   const { actions, names } = useAnimations(animations, group);
@@ -28,6 +35,21 @@ const AvatarModel = ({ modelPath, playAnimation = true, scale = 1.6, position = 
   const isJumping = useRef(false);
   const spinTime = useRef(0);
   const isSpinning = useRef(false);
+
+  // Listen to parent layout triggers
+  useEffect(() => {
+    if (jumpTrigger > 0 && !isJumping.current) {
+      isJumping.current = true;
+      jumpTime.current = 0;
+    }
+  }, [jumpTrigger]);
+
+  useEffect(() => {
+    if (spinTrigger > 0 && !isSpinning.current) {
+      isSpinning.current = true;
+      spinTime.current = 0;
+    }
+  }, [spinTrigger]);
 
   // Find head and neck bones dynamically in the loaded skeleton
   useEffect(() => {
@@ -61,7 +83,7 @@ const AvatarModel = ({ modelPath, playAnimation = true, scale = 1.6, position = 
     }
   }, [playAnimation, names, actions, modelPath]);
 
-  // Trigger click reaction (Jump or Spin)
+  // Trigger random click reaction
   const triggerClickReaction = () => {
     if (Math.random() > 0.5) {
       if (!isJumping.current) {
@@ -199,10 +221,8 @@ const AvatarModel = ({ modelPath, playAnimation = true, scale = 1.6, position = 
         const clickDist = Math.hypot(rawDeltaX, rawDeltaY);
 
         if (clickDist < 8) {
-          // If cursor barely moved, interpret as a direct click trigger
           triggerClickReaction();
         } else {
-          // Otherwise, start wobble spring oscillation from the dragged offset point
           springOffset.current = { x: dragOffset.current.x, y: dragOffset.current.y };
         }
         dragOffset.current = { x: 0, y: 0 };

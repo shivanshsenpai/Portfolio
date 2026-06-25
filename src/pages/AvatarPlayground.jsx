@@ -9,6 +9,10 @@ const AvatarPlayground = ({ onBack }) => {
   const [intensity, setIntensity] = useState(1.5);
   const [autoRotate, setAutoRotate] = useState(false);
 
+  // States to trigger reactions in the 3D canvas from UI buttons
+  const [jumpTrigger, setJumpTrigger] = useState(0);
+  const [spinTrigger, setSpinTrigger] = useState(0);
+
   const modelPath = modelType === "animated" 
     ? "/models/avatar-animated.glb" 
     : "/models/avatar-standing.glb";
@@ -65,6 +69,24 @@ const AvatarPlayground = ({ onBack }) => {
           </div>
 
           <div>
+            <h3 className="text-sm font-semibold tracking-wide text-neutral-300 uppercase mb-3">Avatar Actions</h3>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setJumpTrigger((prev) => prev + 1)}
+                className="py-2 px-3 rounded-lg text-xs font-medium cursor-pointer transition-all bg-white/5 border border-white/10 text-neutral-300 hover:bg-white/10 hover:text-white"
+              >
+                🦘 Jump Reaction
+              </button>
+              <button
+                onClick={() => setSpinTrigger((prev) => prev + 1)}
+                className="py-2 px-3 rounded-lg text-xs font-medium cursor-pointer transition-all bg-white/5 border border-white/10 text-neutral-300 hover:bg-white/10 hover:text-white"
+              >
+                🌀 Spin Reaction
+              </button>
+            </div>
+          </div>
+
+          <div>
             <div className="flex justify-between text-xs text-neutral-300 mb-2">
               <span>Light Intensity</span>
               <span>{intensity}x</span>
@@ -114,7 +136,14 @@ const AvatarPlayground = ({ onBack }) => {
             
             <Suspense fallback={null}>
               <Center>
-                <AvatarModel modelPath={modelPath} playAnimation={modelType === "animated"} />
+                <AvatarModel 
+                  modelPath={modelPath} 
+                  playAnimation={modelType === "animated"} 
+                  scale={1.6} 
+                  position={[0, -1.2, 0]}
+                  jumpTrigger={jumpTrigger}
+                  spinTrigger={spinTrigger}
+                />
               </Center>
             </Suspense>
 
