@@ -12,6 +12,23 @@ const AvatarModel = ({ modelPath, playAnimation = true, scale = 1.6, position = 
   const headRef = useRef(null);
   const neckRef = useRef(null);
 
+  // Interaction refs
+  const isDragging = useRef(false);
+  const dragStart = useRef({ x: 0, y: 0 });
+  const dragOffset = useRef({ x: 0, y: 0 });
+
+  // Spring physics variables for wobbling on release
+  const springOffset = useRef({ x: 0, y: 0 });
+  const springVelocity = useRef({ x: 0, y: 0 });
+  const tension = 0.12; // spring stiffness
+  const damping = 0.84; // bounce damping
+
+  // Programmatic movement triggers
+  const jumpTime = useRef(0);
+  const isJumping = useRef(false);
+  const spinTime = useRef(0);
+  const isSpinning = useRef(false);
+
   // Find head and neck bones dynamically in the loaded skeleton
   useEffect(() => {
     if (!scene) return;
@@ -44,46 +61,160 @@ const AvatarModel = ({ modelPath, playAnimation = true, scale = 1.6, position = 
     }
   }, [playAnimation, names, actions, modelPath]);
 
+  // Trigger click reaction (Jump or Spin)
+  const triggerClickReaction = () => {
+    if (Math.random() > 0.5) {
+      if (!isJumping.current) {
+        isJumping.current = true;
+        jumpTime.current = 0;
+      }
+    } else {
+      if (!isSpinning.current) {
+        isSpinning.current = true;
+        spinTime.current = 0;
+      }
+    }
+  };
+
   // Frame animation loop for interactive physics
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
     const mouseX = state.pointer.x; // Range [-1, 1]
     const mouseY = state.pointer.y; // Range [-1, 1]
 
-    // 1. Neck and Head Look-At Tracking
-    if (headRef.current) {
-      // Smoothly rotate head to look at mouse
-      const targetHeadY = mouseX * 0.45; // limit yaw
-      const targetHeadX = -mouseY * 0.3; // limit pitch
+    let currentTiltX = 0;
+    let currentTiltY = 0;
 
-      headRef.current.rotation.y = THREE.MathUtils.lerp(headRef.current.rotation.y, targetHeadY, 0.1);
-      headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, targetHeadX, 0.1);
+    if (isDragging.current) {
+      // Direct drag tilt
+      currentTiltX = dragOffset.current.y * 1.8; // pitch (tilt up/down)
+      currentTiltY = dragOffset.current.x * 1.8; // yaw (tilt left/right)
+    } else {
+      // Solve Hooke's Law: F = -k * x - c * v
+      // Spring force on X
+      const forceX = -springOffset.current.x * tension;
+      springVelocity.current.x = (springVelocity.current.x + forceX) * damping;
+      springOffset.current.x += springVelocity.current.x;
+
+      // Spring force on Y
+      const forceY = -springOffset.current.y * tension;
+      springVelocity.current.y = (springVelocity.current.y + forceY) * damping;
+      springOffset.current.y += springVelocity.current.y;
+
+      currentTiltX = springOffset.current.y * 1.8;
+      currentTiltY = springOffset.current.x * 1.8;
     }
 
-    if (neckRef.current) {
-      const targetNeckY = mouseX * 0.15;
-      const targetNeckX = -mouseY * 0.1;
+    // 1. Neck and Head Look-At Tracking (only when not dragging)
+    if (!isDragging.current) {
+      if (headRef.current) {
+        const targetHeadY = mouseX * 0.45; // limit yaw
+        const targetHeadX = -mouseY * 0.3; // limit pitch
 
-      neckRef.current.rotation.y = THREE.MathUtils.lerp(neckRef.current.rotation.y, targetNeckY, 0.1);
-      neckRef.current.rotation.x = THREE.MathUtils.lerp(neckRef.current.rotation.x, targetNeckX, 0.1);
+        headRef.current.rotation.y = THREE.MathUtils.lerp(headRef.current.rotation.y, targetHeadY, 0.1);
+        headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, targetHeadX, 0.1);
+      }
+
+      if (neckRef.current) {
+        const targetNeckY = mouseX * 0.15;
+        const targetNeckX = -mouseY * 0.1;
+
+        neckRef.current.rotation.y = THREE.MathUtils.lerp(neckRef.current.rotation.y, targetNeckY, 0.1);
+        neckRef.current.rotation.x = THREE.MathUtils.lerp(neckRef.current.rotation.x, targetNeckX, 0.1);
+      }
     }
 
-    // 2. Gentle Breathing & Body Sway Physics
+    // 2. Programmatic click physics calculations
+    let jumpOffset = 0;
+    if (isJumping.current) {
+      jumpTime.current += 0.05;
+      const t = jumpTime.current;
+      if (t < Math.PI) {
+        jumpOffset = Math.sin(t) * 0.55; // jump height
+      } else {
+        isJumping.current = false;
+        // Trigger a spring bounce when landing!
+        springOffset.current.y = -0.25; // landing compression squish
+        springVelocity.current.y = 0.08;
+      }
+    }
+
+    let spinOffset = 0;
+    if (isSpinning.current) {
+      spinTime.current += 0.05;
+      const t = spinTime.current;
+      if (t < 1) {
+        // Smooth ease-in-out 360-degree rotation curve
+        const ease = t * t * (3 - 2 * t);
+        spinOffset = ease * Math.PI * 2;
+      } else {
+        isSpinning.current = false;
+        // Lateral wobble spring bounce after spin
+        springOffset.current.x = 0.35;
+        springVelocity.current.x = -0.09;
+      }
+    }
+
+    // 3. Gentle Breathing & Group Position
     if (group.current) {
-      // Natural bobbing up and down
-      group.current.position.y = position[1] + Math.sin(time * 2) * 0.035;
+      // Natural bobbing up and down + jump offset
+      group.current.position.y = position[1] + Math.sin(time * 2) * 0.035 + jumpOffset;
 
-      // Small rotation of the body towards the cursor
-      const targetGroupY = mouseX * 0.15;
-      const targetGroupX = -mouseY * 0.08;
+      // Blend mouse sway + spring wobble + spin rotation
+      const targetGroupY = isDragging.current ? currentTiltY : (mouseX * 0.15 + currentTiltY + spinOffset);
+      const targetGroupX = isDragging.current ? currentTiltX : (-mouseY * 0.08 + currentTiltX);
 
-      group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, targetGroupY, 0.05);
-      group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, targetGroupX, 0.05);
+      group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, targetGroupY, 0.1);
+      group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, targetGroupX, 0.1);
     }
   });
 
   return (
-    <group ref={group} position={position} scale={scale} dispose={null}>
+    <group 
+      ref={group} 
+      position={position} 
+      scale={scale} 
+      dispose={null}
+      onPointerDown={(e) => {
+        e.stopPropagation();
+        isDragging.current = true;
+        dragStart.current = { x: e.clientX, y: e.clientY };
+        dragOffset.current = { x: 0, y: 0 };
+        e.target.setPointerCapture(e.pointerId);
+      }}
+      onPointerMove={(e) => {
+        if (!isDragging.current) return;
+        e.stopPropagation();
+        const deltaX = (e.clientX - dragStart.current.x) * 0.003;
+        const deltaY = (e.clientY - dragStart.current.y) * 0.003;
+        dragOffset.current = { x: deltaX, y: deltaY };
+      }}
+      onPointerUp={(e) => {
+        if (!isDragging.current) return;
+        e.stopPropagation();
+        isDragging.current = false;
+
+        const rawDeltaX = e.clientX - dragStart.current.x;
+        const rawDeltaY = e.clientY - dragStart.current.y;
+        const clickDist = Math.hypot(rawDeltaX, rawDeltaY);
+
+        if (clickDist < 8) {
+          // If cursor barely moved, interpret as a direct click trigger
+          triggerClickReaction();
+        } else {
+          // Otherwise, start wobble spring oscillation from the dragged offset point
+          springOffset.current = { x: dragOffset.current.x, y: dragOffset.current.y };
+        }
+        dragOffset.current = { x: 0, y: 0 };
+        e.target.releasePointerCapture(e.pointerId);
+      }}
+      onPointerCancel={(e) => {
+        if (!isDragging.current) return;
+        isDragging.current = false;
+        springOffset.current = { x: dragOffset.current.x, y: dragOffset.current.y };
+        dragOffset.current = { x: 0, y: 0 };
+      }}
+    >
       <primitive object={scene} />
     </group>
   );
