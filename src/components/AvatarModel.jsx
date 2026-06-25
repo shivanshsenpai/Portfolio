@@ -24,11 +24,11 @@ const AvatarModel = ({
   const dragStart = useRef({ x: 0, y: 0 });
   const dragOffset = useRef({ x: 0, y: 0 });
 
-  // Spring physics variables for wobbling on release
+  // Spring physics variables - adjusted for looser, more flexible "rubber-like" wobble
   const springOffset = useRef({ x: 0, y: 0 });
   const springVelocity = useRef({ x: 0, y: 0 });
-  const tension = 0.12; // spring stiffness
-  const damping = 0.84; // bounce damping
+  const tension = 0.08; // looser spring stiffness
+  const damping = 0.88; // smoother recoil motion
 
   // Programmatic movement triggers
   const jumpTime = useRef(0);
@@ -108,38 +108,37 @@ const AvatarModel = ({
     let currentTiltY = 0;
 
     if (isDragging.current) {
-      // Direct drag tilt
-      currentTiltX = dragOffset.current.y * 1.8; // pitch (tilt up/down)
-      currentTiltY = dragOffset.current.x * 1.8; // yaw (tilt left/right)
+      // Direct drag tilt - slightly higher range for flexibility
+      currentTiltX = dragOffset.current.y * 2.0; // pitch (tilt up/down)
+      currentTiltY = dragOffset.current.x * 2.0; // yaw (tilt left/right)
     } else {
       // Solve Hooke's Law: F = -k * x - c * v
-      // Spring force on X
       const forceX = -springOffset.current.x * tension;
       springVelocity.current.x = (springVelocity.current.x + forceX) * damping;
       springOffset.current.x += springVelocity.current.x;
 
-      // Spring force on Y
       const forceY = -springOffset.current.y * tension;
       springVelocity.current.y = (springVelocity.current.y + forceY) * damping;
       springOffset.current.y += springVelocity.current.y;
 
-      currentTiltX = springOffset.current.y * 1.8;
-      currentTiltY = springOffset.current.x * 1.8;
+      currentTiltX = springOffset.current.y * 2.0;
+      currentTiltY = springOffset.current.x * 2.0;
     }
 
     // 1. Neck and Head Look-At Tracking (only when not dragging)
     if (!isDragging.current) {
       if (headRef.current) {
-        const targetHeadY = mouseX * 0.45; // limit yaw
-        const targetHeadX = -mouseY * 0.3; // limit pitch
+        // High range look-at tracking for flexibility
+        const targetHeadY = mouseX * 0.65; // yaw limits
+        const targetHeadX = -mouseY * 0.4; // pitch limits
 
         headRef.current.rotation.y = THREE.MathUtils.lerp(headRef.current.rotation.y, targetHeadY, 0.1);
         headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, targetHeadX, 0.1);
       }
 
       if (neckRef.current) {
-        const targetNeckY = mouseX * 0.15;
-        const targetNeckX = -mouseY * 0.1;
+        const targetNeckY = mouseX * 0.22;
+        const targetNeckX = -mouseY * 0.15;
 
         neckRef.current.rotation.y = THREE.MathUtils.lerp(neckRef.current.rotation.y, targetNeckY, 0.1);
         neckRef.current.rotation.x = THREE.MathUtils.lerp(neckRef.current.rotation.x, targetNeckX, 0.1);
@@ -155,9 +154,9 @@ const AvatarModel = ({
         jumpOffset = Math.sin(t) * 0.55; // jump height
       } else {
         isJumping.current = false;
-        // Trigger a spring bounce when landing!
-        springOffset.current.y = -0.25; // landing compression squish
-        springVelocity.current.y = 0.08;
+        // landing compressed recoil
+        springOffset.current.y = -0.28;
+        springVelocity.current.y = 0.09;
       }
     }
 
@@ -166,14 +165,12 @@ const AvatarModel = ({
       spinTime.current += 0.05;
       const t = spinTime.current;
       if (t < 1) {
-        // Smooth ease-in-out 360-degree rotation curve
         const ease = t * t * (3 - 2 * t);
         spinOffset = ease * Math.PI * 2;
       } else {
         isSpinning.current = false;
-        // Lateral wobble spring bounce after spin
-        springOffset.current.x = 0.35;
-        springVelocity.current.x = -0.09;
+        springOffset.current.x = 0.38;
+        springVelocity.current.x = -0.1;
       }
     }
 
@@ -182,9 +179,9 @@ const AvatarModel = ({
       // Natural bobbing up and down + jump offset
       group.current.position.y = position[1] + Math.sin(time * 2) * 0.035 + jumpOffset;
 
-      // Blend mouse sway + spring wobble + spin rotation
-      const targetGroupY = isDragging.current ? currentTiltY : (mouseX * 0.15 + currentTiltY + spinOffset);
-      const targetGroupX = isDragging.current ? currentTiltX : (-mouseY * 0.08 + currentTiltX);
+      // Group sways towards cursor with wider flexible range
+      const targetGroupY = isDragging.current ? currentTiltY : (mouseX * 0.22 + currentTiltY + spinOffset);
+      const targetGroupX = isDragging.current ? currentTiltX : (-mouseY * 0.12 + currentTiltX);
 
       group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, targetGroupY, 0.1);
       group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, targetGroupX, 0.1);

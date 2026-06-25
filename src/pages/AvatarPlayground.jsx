@@ -1,6 +1,6 @@
 import React, { useState, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Center } from "@react-three/drei";
+import { OrbitControls, ContactShadows } from "@react-three/drei";
 import AvatarModel from "../components/AvatarModel";
 import OrganicDotGrid from "../components/OrganicDotGrid";
 
@@ -119,37 +119,45 @@ const AvatarPlayground = ({ onBack }) => {
           </div>
         </section>
 
-        {/* 3D Canvas Box */}
-        <section className="lg:col-span-3 h-[50vh] lg:h-[70vh] relative border border-neutral-200 bg-white rounded-3xl overflow-hidden shadow-2xl">
-          <Canvas camera={{ position: [0, 0.4, 5.0], fov: 45 }}>
-            <color attach="background" args={["#ffffff"]} />
-            <ambientLight intensity={0.8} />
-            <directionalLight position={[5, 10, 5]} intensity={1.1} color="#ffffff" />
+        {/* 3D Canvas Box - Styled with radial studio gradient */}
+        <section className="lg:col-span-3 h-[50vh] lg:h-[70vh] relative border border-neutral-200 bg-[radial-gradient(circle_at_center,_#ffffff_40%,_#e2e8f0_100%)] rounded-3xl overflow-hidden shadow-2xl">
+          <Canvas camera={{ position: [0, 0.1, 4.5], fov: 45 }} gl={{ alpha: true }}>
+            {/* Dynamic responsive lighting exposure */}
+            <ambientLight intensity={0.3 + intensity * 0.15} />
+            <directionalLight position={[5, 10, 5]} intensity={intensity * 0.7} color="#ffffff" />
             <spotLight
               position={[0, 5, 5]}
               angle={0.6}
               penumbra={1}
-              intensity={1.2 * (intensity / 1.5)}
+              intensity={intensity * 0.8}
               color="#ffffff"
               castShadow
             />
             
             <Suspense fallback={null}>
-              <Center>
-                <AvatarModel 
-                  modelPath={modelPath} 
-                  playAnimation={modelType === "animated"} 
-                  scale={1.6} 
-                  position={[0, -1.2, 0]}
-                  jumpTrigger={jumpTrigger}
-                  spinTrigger={spinTrigger}
-                />
-              </Center>
+              {/* Direct precise Y positioning to prevent head cut-off */}
+              <AvatarModel 
+                modelPath={modelPath} 
+                playAnimation={modelType === "animated"} 
+                scale={1.3} 
+                position={[0, -1.3, 0]}
+                jumpTrigger={jumpTrigger}
+                spinTrigger={spinTrigger}
+              />
+              {/* Soft floor shadow to ground the character */}
+              <ContactShadows 
+                position={[0, -1.32, 0]} 
+                opacity={0.45} 
+                scale={5} 
+                blur={2.2} 
+                far={2} 
+              />
             </Suspense>
 
             <OrbitControls 
               enableZoom={true} 
               enablePan={true}
+              target={[0, -0.1, 0]}
               autoRotate={autoRotate}
               autoRotateSpeed={1.5}
               minDistance={1.5}
