@@ -23,6 +23,11 @@ function Navigation() {
           Contact
         </a>
       </li>
+      <li className="nav-li">
+        <a className="nav-link" href="#play">
+          Play with Shivi
+        </a>
+      </li>
     </ul>
   );
 }
